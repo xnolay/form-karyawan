@@ -343,16 +343,26 @@
                 <!-- Actual Official PDF Page layout matching reference document -->
                 <div id="pdf-container" class="pdf-page relative">
                     
-                    <!-- Header PDF -->
-                    <div class="flex justify-between items-center mb-3 border-b-2 border-slate-900 pb-2">
-                        <div>
-                            <h1 class="text-xl font-black text-slate-900 tracking-wider leading-none">GLORI</h1>
-                            <p class="text-[11px] font-bold text-slate-700 mt-0.5">PT. GLORI MITRA SUKSES</p>
+                    <!-- Kop Surat Resmi PT. GLORI MITRA SUKSES (Tanpa Logo) -->
+                    <div class="border border-slate-900 rounded-2xl p-4 mb-4 flex items-center bg-white shadow-sm">
+                        <!-- Teks Info Kop Surat Presisi Referensi -->
+                        <div class="w-full text-slate-900 leading-tight">
+                            <h1 class="text-base font-black tracking-wide uppercase border-b-2 border-slate-900 inline-block pb-0.5 mb-1.5">
+                                PT. GLORI MITRA SUKSES
+                            </h1>
+                            <p class="text-[10px] font-bold tracking-tight text-slate-900 uppercase leading-snug">
+                                JALAN PANGERAN JAYAKARTA NO.8, KOMPLEK RUKO ARTHA CENTRE PINANGSIA TAMAN SARI, KOTA ADM JAKARTA BARAT
+                            </p>
+                            <p class="text-[10px] font-bold text-slate-900 mt-1 uppercase">
+                                TELP 021-6505001 - RMA: 081927006000 | EMAIL : ADMIN@GLORI.ID
+                            </p>
                         </div>
-                        <div class="text-right">
-                            <h2 class="text-sm font-bold tracking-tight text-slate-800">FORM DATA PRIBADI KARYAWAN/TI</h2>
-                            <p class="text-[10px] text-slate-500 font-mono" id="prev_no_urut">No. Urut: GMS-0001</p>
-                        </div>
+                    </div>
+
+                    <!-- Sub-Header Judul Form & No. Urut -->
+                    <div class="flex justify-between items-center mb-3 border-b-2 border-slate-900 pb-1.5">
+                        <h2 class="text-sm font-bold tracking-tight text-slate-800">FORM DATA PRIBADI KARYAWAN/TI</h2>
+                        <p class="text-[11px] font-bold font-mono text-blue-900" id="prev_no_urut">No. Urut: GMS-0001</p>
                     </div>
 
                     <!-- Main Form Grid Layout matching PDF reference -->
