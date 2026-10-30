@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Data Pribadi Karyawan GLORI (GMS Mitra Sukses)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js for generating PDF output matching the form -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- SheetJS for Excel exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        /* PDF Printable document styling to emulate exact official document layout */
+        .pdf-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            margin: auto;
+            background: #ffffff;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+        .form-table, .form-table th, .form-table td {
+            border: 1px solid #334155;
+            border-collapse: collapse;
+        }
+        .form-table td {
+            padding: 4px 8px;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .pdf-page { box-shadow: none; padding: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased pb-12">
+
+    <!-- Header Navigation -->
+    <header class="bg-blue-900 text-white shadow-md no-print mb-6">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <!-- SVG GMS Logo Baru -->
+                <div class="bg-white px-3 py-1.5 rounded shadow-sm flex items-center justify-center">
+                    <svg class="h-10 w-auto" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+                        <g transform="rotate(12 250 125)" stroke="#111111" stroke-width="4" fill="none">
+                            <ellipse cx="250" cy="125" rx="220" ry="40"/>
+                            <path d="M 40 125 L 30 120 M 40 125 L 30 130" stroke-width="4"/>
+                        </g>
+                        <g transform="rotate(-12 250 125)" stroke="#111111" stroke-width="4" fill="none">
+                            <ellipse cx="250" cy="125" rx="220" ry="40"/>
+                            <path d="M 460 125 L 470 120 M 460 125 L 470 130" stroke-width="4"/>
+                        </g>
+                        <g font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="160" letter-spacing="-5">
+                            <text x="25" y="180" fill="#111111">G</text>
+                            <path d="M 25 180 L 75 180 L 25 110 Z" fill="#e52320" />
+                            <text x="160" y="180" fill="#111111">M</text>
+                            <path d="M 225 45 L 265 180 L 265 45 Z" fill="#e52320" />
+                            <text x="330" y="180" fill="#111111">S</text>
+                            <path d="M 330 45 L 415 45 L 415 115 Z" fill="#e52320" />
+                            <path d="M 400 180 L 455 180 L 455 130 Z" fill="#e52320" />
+                        </g>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-none flex items-center gap-2">
+                        PT GMS MITRA SUKSES
+                        <span id="role-badge" class="bg-amber-400 text-slate-900 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full shadow-sm">
+                            Role: Admin / Karyawan
+                        </span>
+                    </h1>
+                    <p class="text-xs text-blue-200 mt-1">Sistem Input & Rekap Data Pribadi Karyawan</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="switchTab('form-tab')" id="tab-btn-form" class="px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-file-pen"></i> Form Input Data
+                </button>
+                
+                <!-- Tab Rekapan (Khusus Supervisor) -->
+                <button onclick="handleRekapTabClick()" id="tab-btn-rekap" class="px-4 py-2 rounded-lg bg-blue-800 text-blue-200 hover:text-white text-sm font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-300" id="rekap-lock-icon"></i> Rekapan Excel (<span id="count-badge">0</span>)
+                </button>
+
+                <!-- Tombol Bantuan GitHub -->
+                <button onclick="openGithubGuideModal()" class="px-3 py-2 rounded-lg bg-blue-800 hover:bg-blue-700 text-blue-100 font-medium text-xs flex items-center gap-1.5 shadow border border-blue-600 transition" title="Panduan Deploy ke GitHub Pages">
+                    <i class="fa-brands fa-github text-sm"></i> <span>Info GitHub</span>
+                </button>
+
+                <!-- Button Auth Login/Logout Supervisor -->
+                <button onclick="toggleSupervisorAuth()" id="btn-auth-toggle" class="ml-2 px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs flex items-center gap-1.5 shadow transition">
+                    <i class="fa-solid fa-user-shield"></i> <span id="auth-btn-text">Login Supervisor</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4">
+        
+        <!-- SECTION 1: FORM INPUT & LIVE PREVIEW -->
+        <div id="form-tab" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Form Controller Panel (Left side on Desktop) -->
+            <div class="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-slate-200 no-print space-y-4">
+                <div class="border-b pb-3 flex justify-between items-center">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-blue-700"></i> Pengisian Data Karyawan
+                    </h2>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        No. Auto: <span id="display-no-urut">GMS-0001</span>
+                    </span>
+                </div>
+
+                <form id="employeeForm" onsubmit="handleFormSubmit(event)" class="space-y-4 text-xs">
+                    <input type="hidden" id="edit_record_id" value="">
+                    
+                    <!-- Alert Mode Koreksi / Baru -->
+                    <div id="koreksi-notice-box" class="hidden bg-amber-50 border border-amber-300 p-2.5 rounded-lg text-amber-900 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base"></i>
+                        <div>
+                            <span class="font-bold">Mode Koreksi Data Terdeteksi:</span>
+                            <p id="koreksi-notice-text" class="text-[11px] text-amber-800">NIK/Nama ini sudah ada. Data akan disimpan sebagai revisi tanpa menimpa data lama.</p>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info -->
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-sm border-b pb-1">1. Informasi Utama</h3>
+                        
+                        <div>
+                            <label class="block font-medium mb-1">Nama Karyawan/ti *</label>
+                            <input type="text" id="input_nama" required oninput="handleIdentityInputChange()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Lengkap">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">NIK (KTP) *</label>
+                                <input type="text" id="input_nik" required oninput="handleIdentityInputChange()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="16 Digit NIK">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">No. KK</label>
+                                <input type="text" id="input_kk" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nomor KK">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Tempat Lahir *</label>
+                                <input type="text" id="input_tempat_lahir" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Kota">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Tanggal Lahir *</label>
+                                <input type="date" id="input_tgl_lahir" required onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Jabatan *</label>
+                                <input type="text" id="input_jabatan" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: Sales Executive">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Mulai Masuk Kerja *</label>
+                                <input type="date" id="input_tgl_masuk" required onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Pendidikan Terakhir</label>
+                                <select id="input_pendidikan" onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="SMA/SMK">SMA/SMK</option>
+                                    <option value="D3">D3</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Golongan Darah</label>
+                                <select id="input_goldar" onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="-">-</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="AB">AB</option>
+                                    <option value="O">O</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kontak & Alamat -->
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-sm border-b pb-1">2. Alamat & Kontak</h3>
+                        <div>
+                            <label class="block font-medium mb-1">Alamat Sesuai KTP *</label>
+                            <textarea id="input_alamat_ktp" rows="2" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alamat KTP lengkap"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Alamat Domisili Saat Ini *</label>
+                            <textarea id="input_alamat_domisili" rows="2" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alamat Domisili"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">No. Telp / HP *</label>
+                                <input type="text" id="input_hp" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="08xxxxxxxxxx">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Email *</label>
+                                <input type="email" id="input_email" required oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="email@contoh.com">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Status Tempat Tinggal</label>
+                                <select id="input_status_rumah" onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="Milik Sendiri">Milik Sendiri</option>
+                                    <option value="Milik Orang Tua">Milik Orang Tua</option>
+                                    <option value="Sewa / Kontrak">Sewa / Kontrak</option>
+                                    <option value="Kost">Kost</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Status Perkawinan</label>
+                                <select id="input_status_nikah" onchange="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                    <option value="Belum Menikah">Belum Menikah</option>
+                                    <option value="Menikah">Menikah</option>
+                                    <option value="Duda / Janda">Duda / Janda</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Fasilitas Asuransi (Jika Ada)</label>
+                            <input type="text" id="input_asuransi" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: BPJS Kesehatan / Prudential">
+                        </div>
+                    </div>
+
+                    <!-- Foto Profile -->
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-sm border-b pb-1">3. Pas Foto Karyawan</h3>
+                        <div>
+                            <label class="block font-medium mb-1">Upload Foto (PNG/JPG)</label>
+                            <input type="file" id="input_foto" accept="image/*" onchange="handlePhotoUpload(event)" class="w-full p-1 border rounded bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Orang Tua Kandung -->
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-sm border-b pb-1">4. Orang Tua Kandung</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Nama Ayah</label>
+                                <input type="text" id="input_ayah" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Ayah">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Nama Ibu</label>
+                                <input type="text" id="input_ibu" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Ibu">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Alamat Rumah Orang Tua</label>
+                            <input type="text" id="input_alamat_ortu" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alamat Ortu">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Pekerjaan Ortu</label>
+                                <input type="text" id="input_pekerjaan_ortu" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Pekerjaan">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">No. Telp/HP Ortu</label>
+                                <input type="text" id="input_hp_ortu" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="08xxx">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Suami / Istri & Anak -->
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-sm border-b pb-1">5. Suami / Istri & Anak</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Nama Suami/Istri</label>
+                                <input type="text" id="input_pasangan" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Nama Pasangan">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">Pekerjaan Suami/Istri</label>
+                                <input type="text" id="input_pekerjaan_pasangan" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Pekerjaan">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-medium mb-1">Nama Perusahaan Pasangan</label>
+                                <input type="text" id="input_pt_pasangan" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Perusahaan">
+                            </div>
+                            <div>
+                                <label class="block font-medium mb-1">No. Telp/WA Pasangan</label>
+                                <input type="text" id="input_hp_pasangan" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="08xxx">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">Jumlah Anak</label>
+                            <input type="number" id="input_jml_anak" min="0" max="4" value="0" oninput="syncPreview()" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+
+                        <!-- Dynamic Data Anak (Up to 4) -->
+                        <div class="border-t pt-2 space-y-2">
+                            <p class="font-semibold text-slate-600">Data Anak (Maks 4)</p>
+                            <div class="space-y-2">
+                                <div class="grid grid-cols-12 gap-1 items-center">
+                                    <span class="col-span-2 font-medium">Anak 1:</span>
+                                    <input type="text" id="input_anak1_nama" placeholder="Nama Anak" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                    <input type="text" id="input_anak1_ttl" placeholder="Tempat/Tgl Lahir" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                </div>
+                                <div class="grid grid-cols-12 gap-1 items-center">
+                                    <span class="col-span-2 font-medium">Anak 2:</span>
+                                    <input type="text" id="input_anak2_nama" placeholder="Nama Anak" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                    <input type="text" id="input_anak2_ttl" placeholder="Tempat/Tgl Lahir" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                </div>
+                                <div class="grid grid-cols-12 gap-1 items-center">
+                                    <span class="col-span-2 font-medium">Anak 3:</span>
+                                    <input type="text" id="input_anak3_nama" placeholder="Nama Anak" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                    <input type="text" id="input_anak3_ttl" placeholder="Tempat/Tgl Lahir" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                </div>
+                                <div class="grid grid-cols-12 gap-1 items-center">
+                                    <span class="col-span-2 font-medium">Anak 4:</span>
+                                    <input type="text" id="input_anak4_nama" placeholder="Nama Anak" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                    <input type="text" id="input_anak4_ttl" placeholder="Tempat/Tgl Lahir" oninput="syncPreview()" class="col-span-5 p-1 border rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-2 flex flex-col gap-2">
+                        <button type="submit" id="btn-submit-form" class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg shadow flex items-center justify-center gap-2 text-sm transition">
+                            <i class="fa-solid fa-paper-plane"></i> Simpan Data & Kirim PDF ke Sales@glori.id
+                        </button>
+                        <button type="button" id="btn-cancel-edit" onclick="cancelEditMode()" class="hidden w-full py-2 bg-slate-300 hover:bg-slate-400 text-slate-800 font-semibold rounded-lg text-xs">
+                            Batal Edit
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Live PDF Preview Panel (Right side) -->
+            <div class="lg:col-span-7 flex flex-col items-center">
+                <div class="no-print mb-3 w-full flex justify-between items-center bg-amber-50 border border-amber-200 p-3 rounded-lg text-amber-900 text-xs">
+                    <span><i class="fa-solid fa-eye mr-1"></i> Preview Live dokumen PDF yang akan dicetak/dikirim:</span>
+                    <button type="button" onclick="downloadCurrentPDF()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1 rounded flex items-center gap-1 font-semibold">
+                        <i class="fa-solid fa-file-pdf"></i> Download PDF Only
+                    </button>
+                </div>
+
+                <!-- Actual Official PDF Page layout matching reference document -->
+                <div id="pdf-container" class="pdf-page relative">
+                    
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-3 border-b-2 border-slate-900 pb-2">
+                        <div class="flex items-center gap-3">
+                            <!-- SVG GMS Logo inside PDF -->
+                            <svg class="h-12 w-auto" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+                                <g transform="rotate(12 250 125)" stroke="#111111" stroke-width="4" fill="none">
+                                    <ellipse cx="250" cy="125" rx="220" ry="40"/>
+                                    <path d="M 40 125 L 30 120 M 40 125 L 30 130" stroke-width="4"/>
+                                </g>
+                                <g transform="rotate(-12 250 125)" stroke="#111111" stroke-width="4" fill="none">
+                                    <ellipse cx="250" cy="125" rx="220" ry="40"/>
+                                    <path d="M 460 125 L 470 120 M 460 125 L 470 130" stroke-width="4"/>
+                                </g>
+                                <g font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="160" letter-spacing="-5">
+                                    <text x="25" y="180" fill="#111111">G</text>
+                                    <path d="M 25 180 L 75 180 L 25 110 Z" fill="#e52320" />
+                                    <text x="160" y="180" fill="#111111">M</text>
+                                    <path d="M 225 45 L 265 180 L 265 45 Z" fill="#e52320" />
+                                    <text x="330" y="180" fill="#111111">S</text>
+                                    <path d="M 330 45 L 415 45 L 415 115 Z" fill="#e52320" />
+                                    <path d="M 400 180 L 455 180 L 455 130 Z" fill="#e52320" />
+                                </g>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-black text-slate-900 tracking-wider leading-none">GLORI</h1>
+                                <p class="text-[11px] font-bold text-slate-700 mt-0.5">GMS MITRA SUKSES</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <h2 class="text-sm font-bold tracking-tight text-slate-800">FORM DATA PRIBADI KARYAWAN/TI</h2>
+                            <p class="text-[10px] text-slate-500 font-mono" id="prev_no_urut">No. Urut: GMS-0001</p>
+                        </div>
+                    </div>
+
+                    <!-- Main Form Grid Layout matching PDF reference -->
+                    <table class="w-full form-table">
+                        <tbody>
+                            <!-- Row 1: Nama & Photo Box -->
+                            <tr>
+                                <td class="w-1/3 font-semibold">1. Nama Karyawan/ti</td>
+                                <td class="w-5/12 font-medium">
+                                    <span id="prev_nama">-</span>
+                                    <span id="prev_status_badge" class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800 border border-blue-300">DATA BARU</span>
+                                </td>
+                                <td rowspan="5" class="w-1/4 text-center p-2 align-middle bg-slate-50">
+                                    <div class="w-28 h-36 border-2 border-dashed border-slate-400 mx-auto flex items-center justify-center overflow-hidden bg-white text-slate-400 text-[10px] p-1 text-center" id="photo-box">
+                                        YOUR<br>PHOTO<br>HERE
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2: Tempat & Tgl Lahir -->
+                            <tr>
+                                <td class="font-semibold">2. Tempat & Tanggal Lahir</td>
+                                <td id="prev_ttl">-</td>
+                            </tr>
+                            <!-- Row 3: NIK & Telp -->
+                            <tr>
+                                <td colspan="2" class="p-0">
+                                    <table class="w-full border-none">
+                                        <tr>
+                                            <td class="border-none w-1/2 font-semibold">No. NIK: <span id="prev_nik" class="font-normal">-</span></td>
+                                            <td class="border-none w-1/2 font-semibold">No. Telp/HP: <span id="prev_hp" class="font-normal">-</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- Row 4: KK & Email -->
+                            <tr>
+                                <td colspan="2" class="p-0">
+                                    <table class="w-full border-none">
+                                        <tr>
+                                            <td class="border-none w-1/2 font-semibold">No. KK: <span id="prev_kk" class="font-normal">-</span></td>
+                                            <td class="border-none w-1/2 font-semibold">Email: <span id="prev_email" class="font-normal">-</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- Row 5: Jabatan -->
+                            <tr>
+                                <td class="font-semibold">3. Jabatan</td>
+                                <td id="prev_jabatan">-</td>
+                            </tr>
+                            <!-- Row 6: Mulai Masuk Kerja -->
+                            <tr>
+                                <td class="font-semibold">4. Mulai Masuk Kerja</td>
+                                <td colspan="2" id="prev_tgl_masuk">-</td>
+                            </tr>
+                            <!-- Row 7: Pendidikan -->
+                            <tr>
+                                <td class="font-semibold">5. Pendidikan Terakhir</td>
+                                <td colspan="2" id="prev_pendidikan">-</td>
+                            </tr>
+                            <!-- Row 8: Alamat KTP -->
+                            <tr>
+                                <td class="font-semibold">6. Alamat Tinggal Sesuai KTP</td>
+                                <td colspan="2" id="prev_alamat_ktp" class="h-10 align-top">-</td>
+                            </tr>
+                            <!-- Row 9: Alamat Domisili -->
+                            <tr>
+                                <td class="font-semibold">Sesuai Domisili Saat Ini</td>
+                                <td colspan="2" id="prev_alamat_domisili" class="h-10 align-top">-</td>
+                            </tr>
+                            <!-- Row 10: Status Tempat Tinggal -->
+                            <tr>
+                                <td class="font-semibold">7. Status Tempat Tinggal</td>
+                                <td colspan="2" id="prev_status_rumah">-</td>
+                            </tr>
+                            <!-- Row 11: Status Perkawinan -->
+                            <tr>
+                                <td class="font-semibold">8. Status Perkawinan</td>
+                                <td colspan="2" id="prev_status_nikah">-</td>
+                            </tr>
+                            <!-- Row 12: Asuransi -->
+                            <tr>
+                                <td class="font-semibold">9. Asuransi (Jika Ada)<br><span class="text-[10px] font-normal text-slate-500">Jenis Fasilitas Asuransi</span></td>
+                                <td colspan="2" id="prev_asuransi">-</td>
+                            </tr>
+                            <!-- Row 13: Golongan Darah -->
+                            <tr>
+                                <td class="font-semibold">10. Golongan Darah</td>
+                                <td colspan="2" id="prev_goldar">-</td>
+                            </tr>
+                            <!-- Row 14: Orang Tua Kandung -->
+                            <tr>
+                                <td class="font-semibold">11. Orang Tua Kandung</td>
+                                <td colspan="2" class="p-0">
+                                    <table class="w-full border-none">
+                                        <tr>
+                                            <td class="border-none border-b w-1/2">a. Ayah: <span id="prev_ayah" class="font-medium">-</span></td>
+                                            <td class="border-none border-b w-1/2">Ibu: <span id="prev_ibu" class="font-medium">-</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="border-none border-b">b. Alamat Rumah: <span id="prev_alamat_ortu" class="font-medium">-</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-none w-1/2">c. Pekerjaan: <span id="prev_pekerjaan_ortu" class="font-medium">-</span></td>
+                                            <td class="border-none w-1/2">No. Telp/HP: <span id="prev_hp_ortu" class="font-medium">-</span></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- Row 15: Suami/Istri -->
+                            <tr>
+                                <td class="font-semibold">12. Nama Suami/Istri</td>
+                                <td colspan="2" id="prev_pasangan">-</td>
+                            </tr>
+                            <!-- Row 16: Pekerjaan Suami/Istri -->
+                            <tr>
+                                <td class="font-semibold">13. Pekerjaan Suami/Istri<br><span class="text-[10px] font-normal text-slate-500">a. Nama Perusahaan</span></td>
+                                <td colspan="2">
+                                    <span id="prev_pekerjaan_pasangan">-</span> 
+                                    <span class="text-slate-500 text-[10px]" id="prev_pt_pasangan_wrap">(PT: <span id="prev_pt_pasangan">-</span>)</span>
+                                </td>
+                            </tr>
+                            <!-- Row 17: No HP Pasangan -->
+                            <tr>
+                                <td class="font-semibold">14. No. Telp/WA Suami/Istri</td>
+                                <td colspan="2" id="prev_hp_pasangan">-</td>
+                            </tr>
+                            <!-- Row 18: Jumlah Anak -->
+                            <tr>
+                                <td class="font-semibold">15. Jumlah Anak</td>
+                                <td colspan="2" id="prev_jml_anak">0</td>
+                            </tr>
+                            <!-- Row 19: Data Anak -->
+                            <tr>
+                                <td class="font-semibold">16. Data Anak</td>
+                                <td colspan="2" class="p-1">
+                                    <div class="space-y-1 text-[11px]">
+                                        <div><strong>- Anak ke-1:</strong> Nama: <span id="prev_anak1_nama">-</span> | TTL: <span id="prev_anak1_ttl">-</span></div>
+                                        <div><strong>- Anak ke-2:</strong> Nama: <span id="prev_anak2_nama">-</span> | TTL: <span id="prev_anak2_ttl">-</span></div>
+                                        <div><strong>- Anak ke-3:</strong> Nama: <span id="prev_anak3_nama">-</span> | TTL: <span id="prev_anak3_ttl">-</span></div>
+                                        <div><strong>- Anak ke-4:</strong> Nama: <span id="prev_anak4_nama">-</span> | TTL: <span id="prev_anak4_ttl">-</span></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Declaration & Signatures -->
+                    <div class="mt-4 text-[11px]">
+                        <p>Dengan ini saya menyatakan telah mengisi formulir Data Karyawan/ti ini dengan sebenar-benarnya dan dapat dipertanggung-jawabkan kebenarannya.</p>
+                        
+                        <div class="mt-6 flex justify-between items-end">
+                            <div class="text-center font-bold text-slate-400 text-xs">
+                                GLORI MITRA SUKSES
+                            </div>
+                            <div class="text-center">
+                                <p>Jakarta, <span id="prev_tgl_ttd">27 Oktober 2026</span></p>
+                                <p class="mb-12">Karyawan/ti</p>
+                                <p class="font-bold border-t border-slate-800 px-6 pt-1">( <span id="prev_ttd_nama">............................</span> )</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 2: DATA REKAPAN TABLE & EXCEL EXPORT (SUPERVISOR ONLY) -->
+        <div id="rekap-tab" class="hidden space-y-4">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex flex-wrap justify-between items-center gap-4 border-b pb-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-file-excel text-emerald-600"></i> Rekapan Data Karyawan / Cust (Excel Format)
+                            <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded font-semibold border border-amber-300">
+                                Mode Supervisor Active
+                            </span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Akses Supervisor: Anda dapat mengunduh file Excel, mengunduh ulang berkas PDF tersimpan, melihat riwayat tanggal/jam input, serta mengedit atau menghapus data.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 shadow transition">
+                            <i class="fa-solid fa-file-arrow-down"></i> Download Excel (.xlsx)
+                        </button>
+                        <button onclick="clearAllData()" class="bg-red-50 text-red-600 hover:bg-red-100 font-semibold px-3 py-2 rounded-lg text-xs flex items-center gap-1 border border-red-200">
+                            <i class="fa-solid fa-trash"></i> Reset All Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rekapan Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 border-b">
+                                <th class="p-3">No. Urut</th>
+                                <th class="p-3">Status Data</th>
+                                <th class="p-3">Waktu Tersimpan (Tgl & Jam)</th>
+                                <th class="p-3">Nama Karyawan</th>
+                                <th class="p-3">NIK</th>
+                                <th class="p-3">Jabatan</th>
+                                <th class="p-3">No HP</th>
+                                <th class="p-3 text-center">Berkas PDF</th>
+                                <th class="p-3 text-center">Aksi Supervisor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekap-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Panduan Upload GitHub -->
+    <div id="github-modal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-brands fa-github text-slate-900 text-xl"></i> Panduan Upload Aplikasi ke GitHub Pages
+                </h3>
+                <button onclick="closeGithubGuideModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="text-xs text-slate-600 space-y-2.5 leading-relaxed overflow-y-auto max-h-[60vh] pr-1">
+                <p>Aplikasi ini dirancang sebagai <strong>Single-File Web App (`index.html`)</strong>, sehingga sangat mudah untuk di-upload dan di-publish gratis melalui **GitHub Pages**:</strong></p>
+                
+                <ol class="list-decimal list-inside space-y-2 font-medium text-slate-700 bg-slate-50 p-3 rounded-lg border">
+                    <li><strong>Buat Repository Baru di GitHub:</strong>
+                        <p class="font-normal text-[11px] text-slate-500 ml-4 mt-0.5">Buka github.com, klik tombol <em>New Repository</em>, beri nama misal <code>form-karyawan-glori</code>, lalu tentukan Public.</p>
+                    </li>
+                    <li><strong>Upload File Code:</strong>
+                        <p class="font-normal text-[11px] text-slate-500 ml-4 mt-0.5">Simpan seluruh kode aplikasi ini sebagai file bernama <code>index.html</code>. Di repository GitHub Anda, pilih <em>Upload files</em> dan unggah <code>index.html</code> tersebut.</p>
+                    </li>
+                    <li><strong>Aktifkan GitHub Pages:</strong>
+                        <p class="font-normal text-[11px] text-slate-500 ml-4 mt-0.5">Masuk ke menu <strong>Settings</strong> repository &rarr; pilih menu <strong>Pages</strong> di bilah kiri &rarr; pada bagian <em>Branch</em> pilih <code>main</code> / <code>root</code> &rarr; klik <strong>Save</strong>.</p>
+                    </li>
+                    <li><strong>Aplikasi Siap Digunakan Online:</strong>
+                        <p class="font-normal text-[11px] text-slate-500 ml-4 mt-0.5">Dalam 1-2 menit, GitHub akan memberikan URL link online publik (contoh: <code>https://username.github.io/form-karyawan-glori/</code>) yang siap diakses di mana saja.</p>
+                    </li>
+                </ol>
+            </div>
+            <div class="pt-2 text-right">
+                <button onclick="closeGithubGuideModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">
+                    Tutup Panduan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Supervisor Login -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4">
+            <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-800">Login Supervisor</h3>
+                <p class="text-xs text-slate-500 mt-1">Masukkan Password/PIN Supervisor untuk membuka akses Rekapan Excel & Edit/Hapus Data.</p>
+            </div>
+            <form onsubmit="handleSupervisorLogin(event)" class="space-y-3">
+                <input type="password" id="supervisor_password" placeholder="Password Supervisor (default: 1234)" required class="w-full p-2.5 border rounded-lg text-center text-sm font-bold tracking-widest focus:ring-2 focus:ring-amber-500 outline-none">
+                <div class="flex gap-2">
+                    <button type="submit" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs rounded-lg shadow">
+                        Masuk Supervisor
+                    </button>
+                    <button type="button" onclick="closeLoginModal()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-lg">
+                        Batal
+                    </button>
+                </div>
+            </form>
+            <p class="text-[10px] text-slate-400">Password default: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600 font-bold">1234</code></p>
+        </div>
+    </div>
+
+    <!-- Modal Notification / Alert & Dialog -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4">
+            <div id="modal-icon-container" class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="text-lg font-bold text-slate-800">Berhasil Disimpan!</h3>
+            <div id="modal-message" class="text-xs text-slate-600 leading-relaxed text-left">
+                Data karyawan telah berhasil disimpan.
+            </div>
+            <div class="pt-2 flex justify-center gap-2" id="modal-actions">
+                <button onclick="closeModal()" class="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs rounded-lg shadow">
+                    OK, Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Store & Auth State
+        let isSupervisorMode = false;
+        const SUPERVISOR_PIN = "1234";
+
+        let employeeRecords = [];
+        try {
+            const saved = localStorage.getItem('glori_employee_records');
+            if (saved) employeeRecords = JSON.parse(saved);
+        } catch (e) {
+            console.error('Failed to load records from localStorage', e);
+            employeeRecords = [];
+        }
+
+        let currentPhotoBase64 = null;
+        let isKoreksiMode = false;
+        let originalRecordRef = null;
+        let revisionCount = 0;
+
+        // --- Helper & Utility Functions ---
+
+        // Menghitung No. Urut Otomatis berikutnya
+        function getNextNoUrut() {
+            let maxId = 0;
+            employeeRecords.forEach(r => {
+                if (r.noUrut) {
+                    const match = r.noUrut.match(/GMS-(\d+)/);
+                    if (match && match[1]) {
+                        const num = parseInt(match[1], 10);
+                        if (num > maxId) maxId = num;
+                    }
+                }
+            });
+            const nextNum = maxId + 1;
+            return 'GMS-' + String(nextNum).padStart(4, '0');
+        }
+
+        // Memperbarui Tampilan No. Urut pada Form dan Preview
+        function updateNoUrutDisplay() {
+            const nextNo = getNextNoUrut();
+            const editId = document.getElementById('edit_record_id').value;
+            
+            if (!editId && !isKoreksiMode) {
+                document.getElementById('display-no-urut').innerText = nextNo;
+                document.getElementById('prev_no_urut').innerText = 'No. Urut: ' + nextNo;
+            }
+        }
+
+        // Deteksi Otomatis Koreksi berdasarkan NIK / Nama yang sama
+        function handleIdentityInputChange() {
+            const inputNik = document.getElementById('input_nik').value.trim();
+            const inputNama = document.getElementById('input_nama').value.trim().toLowerCase();
+            const editId = document.getElementById('edit_record_id').value;
+
+            syncPreview();
+
+            if (editId) return; // Mengedit langsung dari tombol supervisor
+
+            if (inputNik.length >= 8 || inputNama.length >= 3) {
+                const existing = employeeRecords.filter(r => 
+                    (inputNik.length >= 8 && r.nik === inputNik) || 
+                    (inputNama.length >= 3 && r.nama && r.nama.toLowerCase() === inputNama)
+                );
+
+                if (existing.length > 0) {
+                    const lastMatch = existing[existing.length - 1];
+                    isKoreksiMode = true;
+                    originalRecordRef = lastMatch.noUrut.split(' ')[0]; // Ambil basis GMS-XXXX
+                    revisionCount = existing.length;
+
+                    const newRevId = `${originalRecordRef} (Rev ${revisionCount})`;
+                    document.getElementById('display-no-urut').innerText = newRevId;
+                    document.getElementById('prev_no_urut').innerText = 'No. Urut: ' + newRevId;
+                    
+                    document.getElementById('koreksi-notice-box').classList.remove('hidden');
+                    document.getElementById('koreksi-notice-text').innerText = `NIK/Nama cocok dengan ${lastMatch.nama} (${originalRecordRef}). Data ini akan disimpan sebagai ${newRevId} tanpa menimpa data awal.`;
+                    
+                    document.getElementById('prev_status_badge').innerText = `REVISI (Rev ${revisionCount})`;
+                    document.getElementById('prev_status_badge').className = "ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300";
+                    return;
+                }
+            }
+
+            resetKoreksiNotice();
+        }
+
+        function resetKoreksiNotice() {
+            isKoreksiMode = false;
+            originalRecordRef = null;
+            revisionCount = 0;
+            document.getElementById('koreksi-notice-box').classList.add('hidden');
+            document.getElementById('prev_status_badge').innerText = "DATA BARU";
+            document.getElementById('prev_status_badge').className = "ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800 border border-blue-300";
+            updateNoUrutDisplay();
+        }
+
+        // Sinkronisasi Input Form ke Preview PDF secara Realtime
+        function syncPreview() {
+            const nama = document.getElementById('input_nama').value.trim() || '-';
+            const nik = document.getElementById('input_nik').value.trim() || '-';
+            const kk = document.getElementById('input_kk').value.trim() || '-';
+            const tempatLahir = document.getElementById('input_tempat_lahir').value.trim() || '-';
+            const tglLahir = document.getElementById('input_tgl_lahir').value || '-';
+            const jabatan = document.getElementById('input_jabatan').value.trim() || '-';
+            const tglMasuk = document.getElementById('input_tgl_masuk').value || '-';
+            const pendidikan = document.getElementById('input_pendidikan').value || '-';
+            const alamatKtp = document.getElementById('input_alamat_ktp').value.trim() || '-';
+            const alamatDomisili = document.getElementById('input_alamat_domisili').value.trim() || '-';
+            const statusRumah = document.getElementById('input_status_rumah').value || '-';
+            const statusNikah = document.getElementById('input_status_nikah').value || '-';
+            const asuransi = document.getElementById('input_asuransi').value.trim() || '-';
+            const goldar = document.getElementById('input_goldar').value || '-';
+            const hp = document.getElementById('input_hp').value.trim() || '-';
+            const email = document.getElementById('input_email').value.trim() || '-';
+
+            document.getElementById('prev_nama').innerText = nama;
+            document.getElementById('prev_ttd_nama').innerText = nama !== '-' ? nama : '............................';
+            document.getElementById('prev_ttl').innerText = `${tempatLahir} / ${tglLahir}`;
+            document.getElementById('prev_nik').innerText = nik;
+            document.getElementById('prev_hp').innerText = hp;
+            document.getElementById('prev_kk').innerText = kk;
+            document.getElementById('prev_email').innerText = email;
+            document.getElementById('prev_jabatan').innerText = jabatan;
+            document.getElementById('prev_tgl_masuk').innerText = tglMasuk;
+            document.getElementById('prev_pendidikan').innerText = pendidikan;
+            document.getElementById('prev_alamat_ktp').innerText = alamatKtp;
+            document.getElementById('prev_alamat_domisili').innerText = alamatDomisili;
+            document.getElementById('prev_status_rumah').innerText = statusRumah;
+            document.getElementById('prev_status_nikah').innerText = statusNikah;
+            document.getElementById('prev_asuransi').innerText = asuransi;
+            document.getElementById('prev_goldar').innerText = goldar;
+
+            // Ortu
+            document.getElementById('prev_ayah').innerText = document.getElementById('input_ayah').value.trim() || '-';
+            document.getElementById('prev_ibu').innerText = document.getElementById('input_ibu').value.trim() || '-';
+            document.getElementById('prev_alamat_ortu').innerText = document.getElementById('input_alamat_ortu').value.trim() || '-';
+            document.getElementById('prev_pekerjaan_ortu').innerText = document.getElementById('input_pekerjaan_ortu').value.trim() || '-';
+            document.getElementById('prev_hp_ortu').innerText = document.getElementById('input_hp_ortu').value.trim() || '-';
+
+            // Pasangan
+            document.getElementById('prev_pasangan').innerText = document.getElementById('input_pasangan').value.trim() || '-';
+            document.getElementById('prev_pekerjaan_pasangan').innerText = document.getElementById('input_pekerjaan_pasangan').value.trim() || '-';
+            document.getElementById('prev_pt_pasangan').innerText = document.getElementById('input_pt_pasangan').value.trim() || '-';
+            document.getElementById('prev_hp_pasangan').innerText = document.getElementById('input_hp_pasangan').value.trim() || '-';
+            document.getElementById('prev_jml_anak').innerText = document.getElementById('input_jml_anak').value || '0';
+
+            // Anak
+            document.getElementById('prev_anak1_nama').innerText = document.getElementById('input_anak1_nama').value.trim() || '-';
+            document.getElementById('prev_anak1_ttl').innerText = document.getElementById('input_anak1_ttl').value.trim() || '-';
+            document.getElementById('prev_anak2_nama').innerText = document.getElementById('input_anak2_nama').value.trim() || '-';
+            document.getElementById('prev_anak2_ttl').innerText = document.getElementById('input_anak2_ttl').value.trim() || '-';
+            document.getElementById('prev_anak3_nama').innerText = document.getElementById('input_anak3_nama').value.trim() || '-';
+            document.getElementById('prev_anak3_ttl').innerText = document.getElementById('input_anak3_ttl').value.trim() || '-';
+            document.getElementById('prev_anak4_nama').innerText = document.getElementById('input_anak4_nama').value.trim() || '-';
+            document.getElementById('prev_anak4_ttl').innerText = document.getElementById('input_anak4_ttl').value.trim() || '-';
+        }
+
+        // Upload & Preview Foto Karyawan
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentPhotoBase64 = e.target.result;
+                    document.getElementById('photo-box').innerHTML = `<img src="${currentPhotoBase64}" class="w-full h-full object-cover">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Opsi html2pdf
+        function getPdfOptions(filename) {
+            return {
+                margin: 0,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+        }
+
+        // Download Live PDF langsung dari Form Input
+        function downloadCurrentPDF() {
+            syncPreview();
+            const nama = document.getElementById('input_nama').value.trim() || 'Karyawan';
+            const noUrut = document.getElementById('display-no-urut').innerText.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const element = document.getElementById('pdf-container');
+            const fileName = `Form_Data_Karyawan_${noUrut}_${nama.replace(/\s+/g, '_')}.pdf`;
+            
+            html2pdf().set(getPdfOptions(fileName)).from(element).save();
+        }
+
+        // Simpan Data, Export PDF & Buka Draft Email ke Sales@glori.id
+        function generateAndSendMail(recordData) {
+            const cleanNoUrut = recordData.noUrut.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const fileName = `Form_Data_Karyawan_${cleanNoUrut}_${recordData.nama.replace(/\s+/g, '_')}.pdf`;
+            const element = document.getElementById('pdf-container');
+
+            html2pdf().set(getPdfOptions(fileName)).from(element).save().then(() => {
+                const subject = encodeURIComponent(`Form Data Pribadi Karyawan - ${recordData.noUrut} - ${recordData.nama}`);
+                const body = encodeURIComponent(
+                    `Halo Tim HR / Sales GLORI (PT GMS Mitra Sukses),\n\n` +
+                    `Berikut dilampirkan Data Pribadi Karyawan/ti Baru:\n\n` +
+                    `No. Urut     : ${recordData.noUrut}\n` +
+                    `Status Data  : ${recordData.statusData}\n` +
+                    `Nama         : ${recordData.nama}\n` +
+                    `NIK          : ${recordData.nik}\n` +
+                    `Jabatan      : ${recordData.jabatan}\n` +
+                    `No HP/WA     : ${recordData.hp}\n` +
+                    `Email        : ${recordData.email}\n` +
+                    `Waktu Input  : ${recordData.timestamp}\n\n` +
+                    `Berkas PDF Formulir telah di-download otomatis di perangkat Anda. Silakan lampirkan file PDF tersebut ke email ini sebelum dikirim.\n\n` +
+                    `Terima kasih.`
+                );
+
+                window.location.href = `mailto:sales@glori.id?subject=${subject}&body=${body}`;
+
+                showModalAlert(
+                    "Berhasil Disimpan & Diexport!",
+                    `Data ${recordData.nama} (${recordData.noUrut}) berhasil tersimpan ke sistem. Berkas PDF telah diunduh, dan aplikasi sedang membuka draf email ke sales@glori.id.`
+                );
+
+                document.getElementById('employeeForm').reset();
+                document.getElementById('photo-box').innerHTML = 'YOUR<br>PHOTO<br>HERE';
+                currentPhotoBase64 = null;
+                document.getElementById('edit_record_id').value = '';
+                document.getElementById('btn-cancel-edit').classList.add('hidden');
+                resetKoreksiNotice();
+            });
+        }
+
+        // Navigasi Tab UI
+        function switchTab(tabId) {
+            if (tabId === 'rekap-tab' && !isSupervisorMode) {
+                openLoginModal();
+                return;
+            }
+
+            document.getElementById('form-tab').classList.add('hidden');
+            document.getElementById('rekap-tab').classList.add('hidden');
+            document.getElementById(tabId).classList.remove('hidden');
+
+            const btnForm = document.getElementById('tab-btn-form');
+            const btnRekap = document.getElementById('tab-btn-rekap');
+
+            if (tabId === 'form-tab') {
+                btnForm.className = "px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 shadow";
+                btnRekap.className = "px-4 py-2 rounded-lg bg-blue-800 text-blue-200 hover:text-white text-sm font-semibold flex items-center gap-2";
+            } else {
+                btnRekap.className = "px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 shadow";
+                btnForm.className = "px-4 py-2 rounded-lg bg-blue-800 text-blue-200 hover:text-white text-sm font-semibold flex items-center gap-2";
+            }
+        }
+
+        function handleRekapTabClick() {
+            if (!isSupervisorMode) {
+                openLoginModal();
+            } else {
+                switchTab('rekap-tab');
+            }
+        }
+
+        // Modal Auth Supervisor
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-modal').classList.add('flex');
+            document.getElementById('supervisor_password').value = '';
+            document.getElementById('supervisor_password').focus();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('flex');
+        }
+
+        function handleSupervisorLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('supervisor_password').value;
+            if (pass === SUPERVISOR_PIN) {
+                isSupervisorMode = true;
+                updateRoleUI();
+                closeLoginModal();
+                switchTab('rekap-tab');
+            } else {
+                showModalAlert("Akses Ditolak", "Password Supervisor salah. Coba lagi.");
+            }
+        }
+
+        function toggleSupervisorAuth() {
+            if (isSupervisorMode) {
+                isSupervisorMode = false;
+                updateRoleUI();
+                switchTab('form-tab');
+            } else {
+                openLoginModal();
+            }
+        }
+
+        function updateRoleUI() {
+            const badge = document.getElementById('role-badge');
+            const lockIcon = document.getElementById('rekap-lock-icon');
+            const authBtnText = document.getElementById('auth-btn-text');
+
+            if (isSupervisorMode) {
+                badge.innerText = "Role: Supervisor";
+                badge.className = "bg-emerald-400 text-slate-900 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full shadow-sm";
+                lockIcon.className = "fa-solid fa-unlock text-emerald-300";
+                authBtnText.innerText = "Logout Supervisor";
+            } else {
+                badge.innerText = "Role: Admin / Karyawan";
+                badge.className = "bg-amber-400 text-slate-900 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full shadow-sm";
+                lockIcon.className = "fa-solid fa-lock text-amber-300";
+                authBtnText.innerText = "Login Supervisor";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+            document.getElementById('custom-modal').classList.remove('flex');
+        }
+
+        // Edit Data (Supervisor Only)
+        function editRecord(index) {
+            if (!isSupervisorMode) return;
+            const r = employeeRecords[index];
+            if (!r) return;
+
+            switchTab('form-tab');
+
+            document.getElementById('edit_record_id').value = r.noUrut;
+            document.getElementById('display-no-urut').innerText = r.noUrut + ' (Mode Edit)';
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+            document.getElementById('input_nama').value = r.nama || '';
+            document.getElementById('input_nik').value = r.nik || '';
+            document.getElementById('input_kk').value = r.kk || '';
+            document.getElementById('input_tempat_lahir').value = r.tempatLahir || '';
+            document.getElementById('input_tgl_lahir').value = r.tglLahir || '';
+            document.getElementById('input_jabatan').value = r.jabatan || '';
+            document.getElementById('input_tgl_masuk').value = r.tglMasuk || '';
+            document.getElementById('input_pendidikan').value = r.pendidikan || 'SMA/SMK';
+            document.getElementById('input_alamat_ktp').value = r.alamatKtp || '';
+            document.getElementById('input_alamat_domisili').value = r.alamatDomisili || '';
+            document.getElementById('input_status_rumah').value = r.statusRumah || 'Milik Sendiri';
+            document.getElementById('input_status_nikah').value = r.statusNikah || 'Belum Menikah';
+            document.getElementById('input_asuransi').value = r.asuransi || '';
+            document.getElementById('input_goldar').value = r.goldar || '-';
+            document.getElementById('input_hp').value = r.hp || '';
+            document.getElementById('input_email').value = r.email || '';
+
+            document.getElementById('input_ayah').value = r.ayah || '';
+            document.getElementById('input_ibu').value = r.ibu || '';
+            document.getElementById('input_alamat_ortu').value = r.alamatOrtu || '';
+            document.getElementById('input_pekerjaan_ortu').value = r.pekerjaanOrtu || '';
+            document.getElementById('input_hp_ortu').value = r.hpOrtu || '';
+
+            document.getElementById('input_pasangan').value = r.pasangan || '';
+            document.getElementById('input_pekerjaan_pasangan').value = r.pekerjaanPasangan || '';
+            document.getElementById('input_pt_pasangan').value = r.ptPasangan || '';
+            document.getElementById('input_hp_pasangan').value = r.hpPasangan || '';
+            document.getElementById('input_jml_anak').value = r.jmlAnak || '0';
+
+            document.getElementById('input_anak1_nama').value = r.anak1?.nama || '';
+            document.getElementById('input_anak1_ttl').value = r.anak1?.ttl || '';
+            document.getElementById('input_anak2_nama').value = r.anak2?.nama || '';
+            document.getElementById('input_anak2_ttl').value = r.anak2?.ttl || '';
+            document.getElementById('input_anak3_nama').value = r.anak3?.nama || '';
+            document.getElementById('input_anak3_ttl').value = r.anak3?.ttl || '';
+            document.getElementById('input_anak4_nama').value = r.anak4?.nama || '';
+            document.getElementById('input_anak4_ttl').value = r.anak4?.ttl || '';
+
+            if (r.photo) {
+                currentPhotoBase64 = r.photo;
+                document.getElementById('photo-box').innerHTML = `<img src="${r.photo}" class="w-full h-full object-cover">`;
+            }
+
+            syncPreview();
+        }
+
+        function cancelEditMode() {
+            document.getElementById('edit_record_id').value = '';
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+            document.getElementById('employeeForm').reset();
+            document.getElementById('photo-box').innerHTML = 'YOUR<br>PHOTO<br>HERE';
+            currentPhotoBase64 = null;
+            resetKoreksiNotice();
+            updateNoUrutDisplay();
+            syncPreview();
+        }
+
+        // Hapus Single Record (Supervisor Only)
+        function deleteSingleRecord(index) {
+            if (!isSupervisorMode) return;
+            const r = employeeRecords[index];
+            if (!r) return;
+
+            document.getElementById('modal-title').innerText = "Konfirmasi Hapus Data";
+            document.getElementById('modal-message').innerText = `Apakah Anda yakin ingin menghapus data ${r.nama} (${r.noUrut})?`;
+            document.getElementById('modal-actions').innerHTML = `
+                <button onclick="confirmDeleteSingle(${index})" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow">
+                    Ya, Hapus
+                </button>
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-lg">
+                    Batal
+                </button>
+            `;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        }
+
+        function confirmDeleteSingle(index) {
+            employeeRecords.splice(index, 1);
+            try {
+                localStorage.setItem('glori_employee_records', JSON.stringify(employeeRecords));
+            } catch (e) {
+                console.error('LocalStorage save failed:', e);
+            }
+            renderRekapTable();
+            closeModal();
+        }
+
+        // Initialize App
+        window.onload = function() {
+            updateNoUrutDisplay();
+            renderRekapTable();
+            syncPreview();
+            updateRoleUI();
+            
+            // Set current date in signature
+            const today = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const formattedDate = today.toLocaleDateString('id-ID', options);
+            document.getElementById('prev_tgl_ttd').innerText = formattedDate;
+        };
+
+        function openGithubGuideModal() {
+            document.getElementById('github-modal').classList.remove('hidden');
+            document.getElementById('github-modal').classList.add('flex');
+        }
+
+        function closeGithubGuideModal() {
+            document.getElementById('github-modal').classList.add('hidden');
+            document.getElementById('github-modal').classList.remove('flex');
+        }
+
+        // Form Submission Handler (Selalu Menambah Record Tanpa Menimpa Data Lama)
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            syncPreview();
+
+            const editId = document.getElementById('edit_record_id').value;
+            const nama = document.getElementById('input_nama').value.trim();
+            const email = document.getElementById('input_email').value.trim();
+            const hp = document.getElementById('input_hp').value.trim();
+
+            // Tanggal dan Jam tersimpan secara akurat
+            const now = new Date();
+            const formattedTimestamp = now.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }) + ' - ' + now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }) + ' WIB';
+
+            let noUrut;
+            let statusData = "DATA BARU";
+
+            if (editId) {
+                noUrut = editId;
+                statusData = "DIBERSIHKAN/SUPERVISOR";
+            } else if (isKoreksiMode && originalRecordRef) {
+                noUrut = `${originalRecordRef} (Rev ${revisionCount})`;
+                statusData = `REVISI / KOREKSI (Rev ${revisionCount})`;
+            } else {
+                noUrut = getNextNoUrut();
+                statusData = "DATA BARU";
+            }
+
+            const recordData = {
+                noUrut: noUrut,
+                statusData: statusData,
+                nama: nama,
+                nik: document.getElementById('input_nik').value.trim(),
+                kk: document.getElementById('input_kk').value.trim(),
+                tempatLahir: document.getElementById('input_tempat_lahir').value.trim(),
+                tglLahir: document.getElementById('input_tgl_lahir').value,
+                jabatan: document.getElementById('input_jabatan').value.trim(),
+                tglMasuk: document.getElementById('input_tgl_masuk').value,
+                pendidikan: document.getElementById('input_pendidikan').value,
+                alamatKtp: document.getElementById('input_alamat_ktp').value.trim(),
+                alamatDomisili: document.getElementById('input_alamat_domisili').value.trim(),
+                statusRumah: document.getElementById('input_status_rumah').value,
+                statusNikah: document.getElementById('input_status_nikah').value,
+                asuransi: document.getElementById('input_asuransi').value.trim(),
+                goldar: document.getElementById('input_goldar').value,
+                hp: hp,
+                email: email,
+                photo: currentPhotoBase64,
+                ayah: document.getElementById('input_ayah').value.trim(),
+                ibu: document.getElementById('input_ibu').value.trim(),
+                alamatOrtu: document.getElementById('input_alamat_ortu').value.trim(),
+                pekerjaanOrtu: document.getElementById('input_pekerjaan_ortu').value.trim(),
+                hpOrtu: document.getElementById('input_hp_ortu').value.trim(),
+                pasangan: document.getElementById('input_pasangan').value.trim(),
+                pekerjaanPasangan: document.getElementById('input_pekerjaan_pasangan').value.trim(),
+                ptPasangan: document.getElementById('input_pt_pasangan').value.trim(),
+                hpPasangan: document.getElementById('input_hp_pasangan').value.trim(),
+                jmlAnak: document.getElementById('input_jml_anak').value,
+                anak1: { nama: document.getElementById('input_anak1_nama').value.trim(), ttl: document.getElementById('input_anak1_ttl').value.trim() },
+                anak2: { nama: document.getElementById('input_anak2_nama').value.trim(), ttl: document.getElementById('input_anak2_ttl').value.trim() },
+                anak3: { nama: document.getElementById('input_anak3_nama').value.trim(), ttl: document.getElementById('input_anak3_ttl').value.trim() },
+                anak4: { nama: document.getElementById('input_anak4_nama').value.trim(), ttl: document.getElementById('input_anak4_ttl').value.trim() },
+                timestamp: formattedTimestamp
+            };
+
+            if (editId) {
+                const index = employeeRecords.findIndex(r => r.noUrut === editId);
+                if (index !== -1) {
+                    employeeRecords[index] = recordData;
+                }
+            } else {
+                employeeRecords.push(recordData);
+            }
+
+            try {
+                localStorage.setItem('glori_employee_records', JSON.stringify(employeeRecords));
+            } catch (e) {
+                console.error('LocalStorage write failed:', e);
+            }
+
+            renderRekapTable();
+
+            // Render PDF & Simpan ke supervisor dashboard
+            setTimeout(() => {
+                generateAndSendMail(recordData);
+            }, 100);
+        }
+
+        // Render Data Rekapan Table (Protected)
+        function renderRekapTable() {
+            const tbody = document.getElementById('rekap-table-body');
+            document.getElementById('count-badge').innerText = employeeRecords.length;
+
+            if (employeeRecords.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center p-6 text-slate-400">
+                            Belum ada data karyawan/cust yang terdaftar.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = employeeRecords.map((item, index) => {
+                const isKoreksi = item.statusData && item.statusData.includes('KOREKSI');
+                const badgeStyle = isKoreksi 
+                    ? 'bg-amber-100 text-amber-800 border-amber-300' 
+                    : 'bg-blue-100 text-blue-800 border-blue-300';
+
+                return `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-3 font-bold text-blue-900">${item.noUrut}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle}">
+                            ${item.statusData || 'DATA BARU'}
+                        </span>
+                    </td>
+                    <td class="p-3 font-mono text-[11px] text-slate-600">
+                        <i class="fa-regular fa-clock mr-1 text-slate-400"></i>${item.timestamp || '-'}
+                    </td>
+                    <td class="p-3 font-semibold text-slate-800">${item.nama}</td>
+                    <td class="p-3">${item.nik || '-'}</td>
+                    <td class="p-3"><span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-medium">${item.jabatan || '-'}</span></td>
+                    <td class="p-3">${item.hp || '-'}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="downloadStoredRecordPDF(${index})" title="Unduh Berkas PDF Resmi Karyawan Ini" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold inline-flex items-center gap-1 shadow-sm transition">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                        </button>
+                    </td>
+                    <td class="p-3 text-center flex items-center justify-center gap-1.5">
+                        <button onclick="viewRecordDetail(${index})" title="Lihat Detail" class="text-blue-600 hover:text-blue-800 px-2 py-1 bg-blue-50 rounded font-semibold">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button onclick="editRecord(${index})" title="Edit Data (Supervisor)" class="text-amber-600 hover:text-amber-800 px-2 py-1 bg-amber-50 rounded font-semibold">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="deleteSingleRecord(${index})" title="Hapus Data (Supervisor)" class="text-red-600 hover:text-red-800 px-2 py-1 bg-red-50 rounded font-semibold">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        // Unduh PDF Karyawan Tertentu dari Tabel Supervisor
+        function downloadStoredRecordPDF(index) {
+            const r = employeeRecords[index];
+            if (!r) return;
+
+            // Muat data sementara ke live preview
+            document.getElementById('prev_no_urut').innerText = 'No. Urut: ' + r.noUrut;
+            document.getElementById('prev_nama').innerText = r.nama || '-';
+            document.getElementById('prev_ttd_nama').innerText = r.nama || '............................';
+            document.getElementById('prev_ttl').innerText = (r.tempatLahir || '-') + ' / ' + (r.tglLahir || '-');
+            document.getElementById('prev_nik').innerText = r.nik || '-';
+            document.getElementById('prev_hp').innerText = r.hp || '-';
+            document.getElementById('prev_kk').innerText = r.kk || '-';
+            document.getElementById('prev_email').innerText = r.email || '-';
+            document.getElementById('prev_jabatan').innerText = r.jabatan || '-';
+            document.getElementById('prev_tgl_masuk').innerText = r.tglMasuk || '-';
+            document.getElementById('prev_pendidikan').innerText = r.pendidikan || '-';
+            document.getElementById('prev_alamat_ktp').innerText = r.alamatKtp || '-';
+            document.getElementById('prev_alamat_domisili').innerText = r.alamatDomisili || '-';
+            document.getElementById('prev_status_rumah').innerText = r.statusRumah || '-';
+            document.getElementById('prev_status_nikah').innerText = r.statusNikah || '-';
+            document.getElementById('prev_asuransi').innerText = r.asuransi || '-';
+            document.getElementById('prev_goldar').innerText = r.goldar || '-';
+
+            document.getElementById('prev_ayah').innerText = r.ayah || '-';
+            document.getElementById('prev_ibu').innerText = r.ibu || '-';
+            document.getElementById('prev_alamat_ortu').innerText = r.alamatOrtu || '-';
+            document.getElementById('prev_pekerjaan_ortu').innerText = r.pekerjaanOrtu || '-';
+            document.getElementById('prev_hp_ortu').innerText = r.hpOrtu || '-';
+
+            document.getElementById('prev_pasangan').innerText = r.pasangan || '-';
+            document.getElementById('prev_pekerjaan_pasangan').innerText = r.pekerjaanPasangan || '-';
+            document.getElementById('prev_pt_pasangan').innerText = r.ptPasangan || '-';
+            document.getElementById('prev_hp_pasangan').innerText = r.hpPasangan || '-';
+            document.getElementById('prev_jml_anak').innerText = r.jmlAnak || '0';
+
+            document.getElementById('prev_anak1_nama').innerText = r.anak1?.nama || '-';
+            document.getElementById('prev_anak1_ttl').innerText = r.anak1?.ttl || '-';
+            document.getElementById('prev_anak2_nama').innerText = r.anak2?.nama || '-';
+            document.getElementById('prev_anak2_ttl').innerText = r.anak2?.ttl || '-';
+            document.getElementById('prev_anak3_nama').innerText = r.anak3?.nama || '-';
+            document.getElementById('prev_anak3_ttl').innerText = r.anak3?.ttl || '-';
+            document.getElementById('prev_anak4_nama').innerText = r.anak4?.nama || '-';
+            document.getElementById('prev_anak4_ttl').innerText = r.anak4?.ttl || '-';
+
+            if (r.photo) {
+                document.getElementById('photo-box').innerHTML = `<img src="${r.photo}" class="w-full h-full object-cover">`;
+            } else {
+                document.getElementById('photo-box').innerHTML = 'YOUR<br>PHOTO<br>HERE';
+            }
+
+            const cleanNoUrut = r.noUrut.replace(/[^a-zA-Z0-9_-]/g, '_');
+            const element = document.getElementById('pdf-container');
+            const fileName = `Form_Data_Karyawan_${cleanNoUrut}_${r.nama.replace(/\s+/g, '_')}.pdf`;
+            const opt = getPdfOptions(fileName);
+
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save();
+            }, 150);
+        }
+
+        // Export All Stored Records to Excel (.xlsx) (Supervisor Only)
+        function exportToExcel() {
+            if (!isSupervisorMode) {
+                handleRekapTabClick();
+                return;
+            }
+
+            if (employeeRecords.length === 0) {
+                showModalAlert("Info", "Belum ada data karyawan untuk diexport ke Excel.");
+                return;
+            }
+
+            const excelData = employeeRecords.map(r => ({
+                "No. Urut": r.noUrut,
+                "Status Data": r.statusData || 'DATA BARU',
+                "Waktu Tersimpan (Tgl & Jam)": r.timestamp,
+                "Nama Karyawan": r.nama,
+                "NIK": r.nik,
+                "No. KK": r.kk,
+                "Tempat Lahir": r.tempatLahir,
+                "Tanggal Lahir": r.tglLahir,
+                "Jabatan": r.jabatan,
+                "Mulai Masuk Kerja": r.tglMasuk,
+                "Pendidikan Terakhir": r.pendidikan,
+                "Alamat KTP": r.alamatKtp,
+                "Alamat Domisili": r.alamatDomisili,
+                "Status Tempat Tinggal": r.statusRumah,
+                "Status Perkawinan": r.statusNikah,
+                "Golongan Darah": r.goldar,
+                "Fasilitas Asuransi": r.asuransi,
+                "No HP / WA": r.hp,
+                "Email": r.email,
+                "Nama Ayah": r.ayah,
+                "Nama Ibu": r.ibu,
+                "Alamat Orang Tua": r.alamatOrtu,
+                "Pekerjaan Ortu": r.pekerjaanOrtu,
+                "No HP Ortu": r.hpOrtu,
+                "Nama Suami/Istri": r.pasangan,
+                "Pekerjaan Pasangan": r.pekerjaanPasangan,
+                "Perusahaan Pasangan": r.ptPasangan,
+                "No HP Pasangan": r.hpPasangan,
+                "Jumlah Anak": r.jmlAnak,
+                "Anak 1": `${r.anak1?.nama || '-'} (${r.anak1?.ttl || '-'})`,
+                "Anak 2": `${r.anak2?.nama || '-'} (${r.anak2?.ttl || '-'})`,
+                "Anak 3": `${r.anak3?.nama || '-'} (${r.anak3?.ttl || '-'})`,
+                "Anak 4": `${r.anak4?.nama || '-'} (${r.anak4?.ttl || '-'})`
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Data Karyawan GMS");
+
+            const maxWidths = Object.keys(excelData[0]).map(key => ({
+                wch: Math.max(key.length + 3, 15)
+            }));
+            worksheet['!cols'] = maxWidths;
+
+            XLSX.writeFile(workbook, `Rekap_Data_Karyawan_GLORI_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // Custom Modal Alert replacement
+        function showModalAlert(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-actions').innerHTML = `
+                <button onclick="closeModal()" class="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs rounded-lg shadow">
+                    OK
+                </button>
+            `;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        }
+
+        // View Detail of Record
+        function viewRecordDetail(index) {
+            const r = employeeRecords[index];
+            const detailHtml = `
+                <div class="space-y-1 text-slate-700 text-xs">
+                    <p><strong>No. Urut:</strong> ${r.noUrut}</p>
+                    <p><strong>Status Data:</strong> <span class="font-bold text-amber-700">${r.statusData || 'DATA BARU'}</span></p>
+                    <p><strong>Nama:</strong> ${r.nama}</p>
+                    <p><strong>NIK:</strong> ${r.nik}</p>
+                    <p><strong>Jabatan:</strong> ${r.jabatan}</p>
+                    <p><strong>Tanggal Masuk:</strong> ${r.tglMasuk}</p>
+                    <p><strong>Email:</strong> ${r.email}</p>
+                    <p><strong>No HP:</strong> ${r.hp}</p>
+                    <p><strong>Domisili:</strong> ${r.alamatDomisili}</p>
+                    <p><strong>Status Nikah:</strong> ${r.statusNikah} (${r.jmlAnak} Anak)</p>
+                    <p><strong>Waktu Input:</strong> ${r.timestamp}</p>
+                </div>
+            `;
+            document.getElementById('modal-title').innerText = `Detail Karyawan - ${r.noUrut}`;
+            document.getElementById('modal-message').innerHTML = detailHtml;
+            document.getElementById('modal-actions').innerHTML = `
+                <button onclick="closeModal()" class="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-xs rounded-lg shadow">
+                    Tutup
+                </button>
+            `;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        }
+
+        // Clear All Data confirmation using Custom UI (Supervisor Only)
+        function clearAllData() {
+            if (!isSupervisorMode) {
+                handleRekapTabClick();
+                return;
+            }
+
+            document.getElementById('modal-title').innerText = "Konfirmasi Reset Data";
+            document.getElementById('modal-message').innerText = "Apakah Anda yakin ingin mengosongkan seluruh data rekapan? Tindakan ini tidak dapat dibatalkan.";
+            document.getElementById('modal-actions').innerHTML = `
+                <button onclick="confirmClearAll()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow">
+                    Ya, Hapus Semua
+                </button>
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-lg">
+                    Batal
+                </button>
+            `;
+            document.getElementById('custom-modal').classList.remove('hidden');
+            document.getElementById('custom-modal').classList.add('flex');
+        }
+
+        function confirmClearAll() {
+            employeeRecords = [];
+            localStorage.removeItem('glori_employee_records');
+            renderRekapTable();
+            resetKoreksiNotice();
+            updateNoUrutDisplay();
+            closeModal();
+        }
+    </script>
+</body>
+</html>
