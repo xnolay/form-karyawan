@@ -50,31 +50,10 @@
     <header class="bg-blue-900 text-white shadow-md no-print mb-6">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <!-- SVG GMS Logo Baru -->
-                <div class="bg-white px-3 py-1.5 rounded shadow-sm flex items-center justify-center">
-                    <svg class="h-10 w-auto" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
-                        <g transform="rotate(12 250 125)" stroke="#111111" stroke-width="4" fill="none">
-                            <ellipse cx="250" cy="125" rx="220" ry="40"/>
-                            <path d="M 40 125 L 30 120 M 40 125 L 30 130" stroke-width="4"/>
-                        </g>
-                        <g transform="rotate(-12 250 125)" stroke="#111111" stroke-width="4" fill="none">
-                            <ellipse cx="250" cy="125" rx="220" ry="40"/>
-                            <path d="M 460 125 L 470 120 M 460 125 L 470 130" stroke-width="4"/>
-                        </g>
-                        <g font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="160" letter-spacing="-5">
-                            <text x="25" y="180" fill="#111111">G</text>
-                            <path d="M 25 180 L 75 180 L 25 110 Z" fill="#e52320" />
-                            <text x="160" y="180" fill="#111111">M</text>
-                            <path d="M 225 45 L 265 180 L 265 45 Z" fill="#e52320" />
-                            <text x="330" y="180" fill="#111111">S</text>
-                            <path d="M 330 45 L 415 45 L 415 115 Z" fill="#e52320" />
-                            <path d="M 400 180 L 455 180 L 455 130 Z" fill="#e52320" />
-                        </g>
-                    </svg>
-                </div>
+                <!-- Tulisan Nama Perusahaan Bersih Tanpa Logo Gambar -->
                 <div>
-                    <h1 class="text-lg font-bold leading-none flex items-center gap-2">
-                        PT GMS MITRA SUKSES
+                    <h1 class="text-xl font-black tracking-wide leading-none flex items-center gap-2">
+                        PT. GLORI MITRA SUKSES
                         <span id="role-badge" class="bg-amber-400 text-slate-900 text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full shadow-sm">
                             Role: Admin / Karyawan
                         </span>
@@ -364,33 +343,11 @@
                 <!-- Actual Official PDF Page layout matching reference document -->
                 <div id="pdf-container" class="pdf-page relative">
                     
-                    <!-- Header -->
+                    <!-- Header PDF -->
                     <div class="flex justify-between items-center mb-3 border-b-2 border-slate-900 pb-2">
-                        <div class="flex items-center gap-3">
-                            <!-- SVG GMS Logo inside PDF -->
-                            <svg class="h-12 w-auto" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
-                                <g transform="rotate(12 250 125)" stroke="#111111" stroke-width="4" fill="none">
-                                    <ellipse cx="250" cy="125" rx="220" ry="40"/>
-                                    <path d="M 40 125 L 30 120 M 40 125 L 30 130" stroke-width="4"/>
-                                </g>
-                                <g transform="rotate(-12 250 125)" stroke="#111111" stroke-width="4" fill="none">
-                                    <ellipse cx="250" cy="125" rx="220" ry="40"/>
-                                    <path d="M 460 125 L 470 120 M 460 125 L 470 130" stroke-width="4"/>
-                                </g>
-                                <g font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="160" letter-spacing="-5">
-                                    <text x="25" y="180" fill="#111111">G</text>
-                                    <path d="M 25 180 L 75 180 L 25 110 Z" fill="#e52320" />
-                                    <text x="160" y="180" fill="#111111">M</text>
-                                    <path d="M 225 45 L 265 180 L 265 45 Z" fill="#e52320" />
-                                    <text x="330" y="180" fill="#111111">S</text>
-                                    <path d="M 330 45 L 415 45 L 415 115 Z" fill="#e52320" />
-                                    <path d="M 400 180 L 455 180 L 455 130 Z" fill="#e52320" />
-                                </g>
-                            </svg>
-                            <div>
-                                <h1 class="text-xl font-black text-slate-900 tracking-wider leading-none">GLORI</h1>
-                                <p class="text-[11px] font-bold text-slate-700 mt-0.5">GMS MITRA SUKSES</p>
-                            </div>
+                        <div>
+                            <h1 class="text-xl font-black text-slate-900 tracking-wider leading-none">GLORI</h1>
+                            <p class="text-[11px] font-bold text-slate-700 mt-0.5">PT. GLORI MITRA SUKSES</p>
                         </div>
                         <div class="text-right">
                             <h2 class="text-sm font-bold tracking-tight text-slate-800">FORM DATA PRIBADI KARYAWAN/TI</h2>
@@ -660,10 +617,10 @@
             </div>
             <div>
                 <h3 class="text-lg font-bold text-slate-800">Login Supervisor</h3>
-                <p class="text-xs text-slate-500 mt-1">Masukkan Password/PIN Supervisor untuk membuka akses Rekapan Excel & Edit/Hapus Data.</p>
+                <p class="text-xs text-slate-500 mt-1">Masukkan Kata Sandi Supervisor untuk mengakses Rekapan Excel & Fitur Khusus.</p>
             </div>
             <form onsubmit="handleSupervisorLogin(event)" class="space-y-3">
-                <input type="password" id="supervisor_password" placeholder="Password Supervisor (default: 1234)" required class="w-full p-2.5 border rounded-lg text-center text-sm font-bold tracking-widest focus:ring-2 focus:ring-amber-500 outline-none">
+                <input type="password" id="supervisor_password" placeholder="Masukkan Password Supervisor" required class="w-full p-2.5 border rounded-lg text-center text-sm font-bold tracking-widest focus:ring-2 focus:ring-amber-500 outline-none">
                 <div class="flex gap-2">
                     <button type="submit" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs rounded-lg shadow">
                         Masuk Supervisor
@@ -673,7 +630,6 @@
                     </button>
                 </div>
             </form>
-            <p class="text-[10px] text-slate-400">Password default: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600 font-bold">1234</code></p>
         </div>
     </div>
 
@@ -698,7 +654,7 @@
     <script>
         // Data Store & Auth State
         let isSupervisorMode = false;
-        const SUPERVISOR_PIN = "1234";
+        const SUPERVISOR_PIN = "272227";
 
         let employeeRecords = [];
         try {
